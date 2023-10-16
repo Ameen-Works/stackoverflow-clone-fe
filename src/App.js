@@ -48,7 +48,7 @@ function App() {
       <Routes>
         <Route path="auth" element={<Auth />} />
         <Route
-          path="/"
+          path="/home"
           element={<PrivateRoute element={<StackOverflow />} />}
         />
         <Route

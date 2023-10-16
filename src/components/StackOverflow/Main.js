@@ -25,16 +25,16 @@ function Main() {
             <div className="main-tabs">
               <div className="main-tab">
                 {/* <a href="/">Newest</a> */}
-                <Link to="/">Newest</Link>
+                <Link to="/home">Newest</Link>
               </div>
               <div className="main-tab">
-                <Link to="/">Active</Link>
+                <Link to="/home">Active</Link>
 
                 {/* <a href="/">Active</a> */}
               </div>
               <div className="main-tab">
                 {/* <a href="/">More</a> */}
-                <Link to="/">More</Link>
+                <Link to="/home">More</Link>
               </div>
             </div>
             <div className="main-filter-item">

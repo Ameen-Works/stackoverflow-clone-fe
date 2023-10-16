@@ -7,16 +7,17 @@ import HelpIcon from "@mui/icons-material/Help";
 import { Link } from "react-router-dom";
 import { Avatar } from "@mui/material";
 import { stringAvatar } from "../../utils/Avatar";
-// import { auth } from "../../firebase";
-// import { useSelector } from "react-redux";
-// import { selectUser } from "../../feature/userSlice";
+import { useSelector } from "react-redux";
+import { auth } from "../../Firebase";
+import { selectUser } from "../../features/userSlice";
 
 function Header() {
+  const user = useSelector(selectUser);
   return (
     <header>
       <div className="header-container">
         <div className="header-left">
-          <Link to="/">
+          <Link to="/home">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Stack_Overflow_logo.svg/220px-Stack_Overflow_logo.svg.png"
               alt="logo"
@@ -42,10 +43,9 @@ function Header() {
               style={{
                 cursor: "pointer",
               }}
-              //   {...stringAvatar(user && user.displayName)}
-                              {...stringAvatar("Ameen Works")}
-
-              //   onClick={() => auth.signOut()}
+                {...stringAvatar(user && user.displayName)}
+              // {...stringAvatar("Ameen Works")}
+              onClick={() => auth.signOut()}
             />
             <InboxIcon />
             <HelpIcon />

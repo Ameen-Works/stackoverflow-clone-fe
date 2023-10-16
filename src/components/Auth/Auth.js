@@ -29,8 +29,8 @@ function Auth() {
     signInWithPopup(auth, provider)
       .then((res) => {
         setLoading(false);
-        // console.log(res);
-        history("/");
+        console.log(res);
+        history("/home");
         // return (
         //   <>
 
@@ -56,7 +56,7 @@ function Auth() {
       signInWithEmailAndPassword(auth, email, password)
         .then((res) => {
           // console.log(res);
-          history("/");
+          history("/home");
           setLoading(false);
         })
         .catch((error) => {
