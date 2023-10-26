@@ -19,10 +19,21 @@ function stringToColor(string) {
 }
 
 export function stringAvatar(name) {
+  const nameParts = name ? name.split(" ") : " ";
+  let avatarText = "";
+
+  if (nameParts.length >= 1) {
+    avatarText += nameParts[0][0]; // First letter of the first word
+
+    if (nameParts.length >= 2 && nameParts[1].length > 1) {
+      avatarText += nameParts[1][0]; // Second letter of the second word
+    }
+  }
+
   return {
     sx: {
       bgcolor: name ? stringToColor(name) : "rgba(255,255,255,0.8)",
     },
-    children: name && `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    children: avatarText,
   };
 }

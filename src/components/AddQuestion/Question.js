@@ -1,12 +1,100 @@
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
+import Editor from "react-quill/lib";
 import "./Question.css";
 import "react-quill/dist/quill.snow.css";
 import { TagsInput } from "react-tag-input-component";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../features/userSlice";
 
 function Question() {
-  const [tag, setTag] = useState([]);
+  const user = useSelector(selectUser);
+  var toolbarOptions = [
+    ["bold", "italic", "underline", "strike"], // toggled buttons
+    ["blockquote", "code-block"],
 
+    [{ header: 1 }, { header: 2 }], // custom button values
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ script: "sub" }, { script: "super" }], // superscript/subscript
+    [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+    [{ direction: "rtl" }], // text direction
+
+    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+    [{ font: [] }],
+    [{ align: [] }],
+
+    ["clean"], // remove formatting button
+  ];
+
+  Editor.modules = {
+    syntax: false,
+    toolbar: toolbarOptions,
+    clipboard: {
+      // toggle to add extra line breaks when pasting HTML:
+      matchVisual: false,
+    },
+  };
+  /*
+   * Quill editor formats
+   * See https://quilljs.com/docs/formats/
+   */
+  Editor.formats = [
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "video",
+  ];
+
+  // const [tag, setTag] = useState([]);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [tag, setTag] = useState([]);
+  const history = useNavigate();
+
+  const handleQuill = (value) => {
+    setBody(value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (title !== "" && body !== "") {
+      const bodyJSON = {
+        title: title,
+        body: body,
+        tag: JSON.stringify(tag),
+        user: user?.displayName,
+      };
+      await axios
+        .post(
+          "https://stackoverflow-clone-be.onrender.com/api/question",
+          bodyJSON
+        )
+        .then((res) => {
+          // console.log(res.data);
+          alert("Question added successfully");
+          history("/home");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
   return (
     <div className="add-question">
       <div className="add-question-container">
@@ -23,8 +111,8 @@ function Question() {
                   person
                 </small>
                 <input
-                  //   value={title}
-                  //   onChange={(e) => setTitle(e.target.value)}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   type="text"
                   placeholder="e.g Is there an R function for finding teh index of an element in a vector?"
                 />
@@ -38,9 +126,9 @@ function Question() {
                   question
                 </small>
                 <ReactQuill
-                  //   value={body}
-                  //   onChange={handleQuill}
-                  //   modules={Editor.modules}
+                  value={body}
+                  onChange={handleQuill}
+                  modules={Editor.modules}
                   className="react-quill"
                   theme="snow"
                 />
@@ -72,10 +160,7 @@ function Question() {
           </div>
         </div>
 
-        <button
-          // onClick={handleSubmit}
-          className="button"
-        >
+        <button onClick={handleSubmit} className="button">
           Add your question
         </button>
       </div>

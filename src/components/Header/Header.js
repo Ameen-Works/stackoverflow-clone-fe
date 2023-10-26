@@ -43,7 +43,8 @@ function Header() {
               style={{
                 cursor: "pointer",
               }}
-                {...stringAvatar(user && user.displayName)}
+              // src={user?.photo}
+              {...stringAvatar(user && user?.displayName)}
               // {...stringAvatar("Ameen Works")}
               onClick={() => auth.signOut()}
             />

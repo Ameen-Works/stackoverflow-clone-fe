@@ -1,20 +1,89 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Editor from "react-quill/lib";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import HistoryIcon from "@mui/icons-material/History";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Avatar from "@mui/material/Avatar";
 import { stringAvatar } from "../../utils/Avatar";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../features/userSlice";
+import HTMLReactParser from "html-react-parser";
+import axios from "axios";
 
 function MainQuestion() {
+  let search = window.location.search;
+  const params = new URLSearchParams(search);
+  // const id = params.get("q");
+  const { id } = useParams();
+
+  const [questionData, setQuestionData] = useState();
+  const [comment, setComment] = useState("");
+  const user = useSelector(selectUser);
+
   const [answer, setAnswer] = useState("");
   const [show, setShow] = useState(false);
+
+  const handleComment = async () => {
+    if (comment !== "") {
+      const body = {
+        question_id: id,
+        comment: comment,
+        user: user.displayName,
+      };
+      await axios
+        .post(
+          `https://stackoverflow-clone-be.onrender.com/api/comment/${id}`,
+          body
+        )
+        .then((res) => {
+          setComment("");
+          setShow(false);
+          getUpdatedAnswer();
+          // console.log(res.data);
+        });
+    }
+
+    // setShow(true)
+  };
+
+  const handleSubmit = async () => {
+    const body = {
+      question_id: id,
+      answer: answer,
+      user: user.displayName,
+    };
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    await axios
+      .post(
+        "https://stackoverflow-clone-be.onrender.com/api/answer",
+        body,
+        config
+      )
+      .then(() => {
+        alert("Answer added successfully");
+        setAnswer("");
+        getUpdatedAnswer();
+      })
+      .catch((err) => console.log(err));
+  };
 
   const handleQuill = (value) => {
     setAnswer(value);
   };
+
+  async function getUpdatedAnswer() {
+    await axios
+      .get(`https://stackoverflow-clone-be.onrender.com/api/question/${id}`)
+      .then((res) => setQuestionData(res.data[0]))
+      .catch((err) => console.log(err));
+  }
 
   var toolbarOptions = [
     ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -66,13 +135,23 @@ function MainQuestion() {
     "image",
     "video",
   ];
+  useEffect(() => {
+    console.log(id);
+    async function getFunctionDetails() {
+      await axios
+        .get(`https://stackoverflow-clone-be.onrender.com/api/question/${id}`)
+        .then((res) => setQuestionData(res.data[0]))
+        .catch((err) => console.log(err));
+    }
+    getFunctionDetails();
+  }, [id]);
 
   return (
     <div className="main">
       <div className="main-container">
         <div className="main-top">
           <h2 className="main-question">
-            {/* {questionData?.title}  */}
+            {questionData?.title}
             npm install does not install any node modules in my React projects
           </h2>
           <Link to="/add-question">
@@ -87,8 +166,8 @@ function MainQuestion() {
             <p>
               Asked
               <span>
-                10/15/2023
-                {/* {new Date(questionData?.created_at).toLocaleString()} */}
+                {/* 10/15/2023 */}
+                {new Date(questionData?.created_at).toLocaleString()}
               </span>
             </p>
             <p>
@@ -115,49 +194,46 @@ function MainQuestion() {
               </div>
             </div>
             <div className="question-answer">
-              <p>
-                npm install does not install any node modules in my React
-                projects
-                {/* {ReactHtmlParser(questionData?.body)} */}
-              </p>
+              {/* <p> */}
+              {/* npm install does not install any node modules in my React
+                projects */}
+              {/* {questionData.body} */}
+              {HTMLReactParser(questionData?.body || "")}
+              {/* </p> */}
 
               <div className="author">
                 <small>
                   asked
-                  {/* {new Date(questionData?.created_at).toLocaleString()} */}
-                  10/15/2023
+                  {new Date(questionData?.created_at).toLocaleString()}
+                  {/* 10/15/2023 */}
                 </small>
                 <div className="auth-details">
-                  
-                  <Avatar {...stringAvatar("Ameen Works")} />
+                  <Avatar {...stringAvatar(questionData?.user)} />
                   <p>
-                    "Natalia lee"
-                    {/* {questionData?.user?.displayName
-                      ? questionData?.user?.displayName
-                      : "Natalia lee"} */}
+                    {/* "Natalia lee" */}
+                    {questionData?.user ? questionData?.user : "Natalia lee"}
                   </p>
                 </div>
               </div>
               <div className="comments">
                 <div className="comment">
-                  {/* {questionData?.comments &&
-                    questionData?.comments.map((_qd) => ( */}
-                  <p key="123">
-                    {/* {_qd?._id} */}
-                    {/* {_qd.comment}{" "} */}
-                    Try to delete npm cache with this command: npm cache clean
-                    --force
-                    <span>
-                      "Nate Eldredge"
-                      {/* - {_qd.user ? _qd.user.displayName : "Nate Eldredge"} */}
-                    </span>{" "}
-                    {"    "}
-                    <small>
-                      10/15/2023
-                      {/* {new Date(_qd.created_at).toLocaleString()} */}
-                    </small>
-                  </p>
-                  {/* ))} */}
+                  {questionData?.comments &&
+                    questionData?.comments.map((_qd) => (
+                      <p key={_qd?._id}>
+                        {_qd.comment}
+                        {/* Try to delete npm cache with this command:
+                        npm cache clean --force */}
+                        <span>
+                          {/* "Nate Eldredge" */}-{" "}
+                          {_qd.user ? _qd.user : "Nate Eldredge"}
+                        </span>{" "}
+                        {"    "}
+                        <small>
+                          {/* 10/15/2023 */}
+                          {new Date(_qd.created_at).toLocaleString()}
+                        </small>
+                      </p>
+                    ))}
                 </div>
                 <p onClick={() => setShow(!show)}>Add a comment</p>
                 {show && (
@@ -170,14 +246,14 @@ function MainQuestion() {
                         borderRadius: "3px",
                         outline: "none",
                       }}
-                      //   value={comment}
-                      //   onChange={(e) => setComment(e.target.value)}
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
                       type="text"
                       placeholder="Add your comment..."
                       rows={5}
                     />
                     <button
-                      //   onClick={handleComment}
+                      onClick={handleComment}
                       style={{
                         maxWidth: "fit-content",
                       }}
@@ -203,62 +279,63 @@ function MainQuestion() {
               fontWeight: "300",
             }}
           >
-            {/* {questionData && questionData?.answerDetails.length} */}
+            {questionData && questionData?.answerDetails.length}
             Answers
           </p>
-          {/* {questionData?.answerDetails.map((_q) => (
-            <> */}
-          <div
-            style={{
-              borderBottom: "1px solid #eee",
-            }}
-            key="1234"
-            // {_q._id}
-            className="all-questions-container"
-          >
-            <div className="all-questions-left">
-              <div className="all-options">
-                <p className="arrow">▲</p>
+          {questionData?.answerDetails.map((_q) => (
+            <>
+              <div
+                style={{
+                  borderBottom: "1px solid #eee",
+                }}
+                key={_q._id}
+                className="all-questions-container"
+              >
+                <div className="all-questions-left">
+                  <div className="all-options">
+                    <p className="arrow">▲</p>
 
-                <p className="arrow">0</p>
+                    <p className="arrow">0</p>
 
-                <p className="arrow">▼</p>
+                    <p className="arrow">▼</p>
 
-                <BookmarkIcon />
+                    <BookmarkIcon />
 
-                <HistoryIcon />
-              </div>
-            </div>
-            <div className="question-answer">
-              I had the same problem, which was fixed after a few hours. I
-              couldn't find a suitable solution until I tried my own. I managed
-              to resolve it by downgrading my Node version from 16 to 14.15.0
-              using nvm (I'm using nvm). So this is my solution - downgrade node
-              version as above and try again. There are a few global solutions
-              such as: delete package-lock.json(windows):
-              {/* {ReactHtmlParser(_q.answer)} */}
-              <div className="author">
-                <small>
-                  asked 10/15/2023
-                  {/* {new Date(_q.created_at).toLocaleString()} */}
-                </small>
-                <div className="auth-details">
-                  <Avatar
-                    // {...stringAvatar(_q?.user?.displayName)}
-                    {...stringAvatar("Ameen Works")}
-                    />
-                  <p>
-                    "Natalia lee"
-                    {/* {_q?.user?.displayName
-                          ? _q?.user?.displayName
-                          : "Natalia lee"} */}
-                  </p>
+                    <HistoryIcon />
+                  </div>
+                </div>
+                <div className="question-answer">
+                  {/* I had the same problem, which was fixed after a few hours. I
+                  couldn't find a suitable solution until I tried my own. I
+                  managed to resolve it by downgrading my Node version from 16
+                  to 14.15.0 using nvm (I'm using nvm). So this is my solution -
+                  downgrade node version as above and try again. There are a few
+                  global solutions such as: delete package-lock.json(windows): */}
+                  {/* {_q.answer !== ""
+                    ? HTMLReactParser(_q.answer)
+                    : "Be first to Answer"} */}
+                  {/* {_q.answer} */}
+                  {HTMLReactParser(_q.answer || "")}
+                  <div className="author">
+                    <small>
+                      {/* asked 10/15/2023 */}
+                      {new Date(_q.created_at).toLocaleString()}
+                    </small>
+                    <div className="auth-details">
+                      <Avatar
+                        {...stringAvatar(_q?.user)}
+                        // {...stringAvatar("Ameen Works")}
+                      />
+                      <p>
+                        {/* "Natalia lee" */}
+                        {_q?.user ? _q?.user : "Natalia lee"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          {/* </>
-          ))} */}
+            </>
+          ))}
         </div>
         {/* <div className="questions">
           <div className="question">
@@ -291,7 +368,7 @@ function MainQuestion() {
         />
       </div>
       <button
-        // onClick={handleSubmit}
+        onClick={handleSubmit}
         style={{
           marginTop: "100px",
           maxWidth: "fit-content",

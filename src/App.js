@@ -40,7 +40,6 @@ function App() {
       return <Navigate to="/auth" />;
     }
   };
-  
 
   return (
     <div className="App">

@@ -3,21 +3,29 @@ import { Link } from "react-router-dom";
 import "./CSS/AllQuestion.css";
 import { Avatar } from "@mui/material";
 import { stringAvatar } from "../../utils/Avatar";
+import HTMLReactParser from "html-react-parser";
 
-function AllQuestions() {
-  let tags = ["React", "FSD", "Test1", "Test2"];
+function AllQuestions({ data }) {
+  // let tags = ["React", "FSD", "Test1", "Test2"];
+  let tags = data?.tags[0] ? JSON.parse(data?.tags[0]) : JSON.parse('[""]');
+  function truncate(str, n) {
+    return str?.length > n ? str.substr(0, n - 1) + "..." : str;
+  }
+
   return (
     <div className="all-questions">
       <div className="all-questions-container">
         <div className="all-questions-left">
           <div className="all-options">
             <div className="all-option">
+              {/* {typeof data?.tags[0]} */}
+              {/* {tags1[0]} */}
               <p>0</p>
               <span>votes</span>
             </div>
             <div className="all-option">
-              {/* <p>{data?.answerDetails?.length}</p> */}
-              <p>11</p>
+              <p>{data?.answerDetails?.length}</p>
+              {/* <p>11</p> */}
               <span>answers</span>
             </div>
             <div className="all-option">
@@ -26,8 +34,8 @@ function AllQuestions() {
           </div>
         </div>
         <div className="question-answer">
-          {/* <Link to={`/question?q=${data?._id}`}>{data.title}</Link> */}
-          <Link to={`/question/123`}>Question title...</Link>
+          <Link to={`/question/${data?._id}`}>{data.title}</Link>
+          {/* <Link to={`/question/123`}>Question title...</Link> */}
 
           {/* <a href=>{data.title}</a> */}
 
@@ -36,7 +44,7 @@ function AllQuestions() {
               maxWidth: "90%",
             }}
           >
-            {/* <div>{ReactHtmlParser(truncate(data.body, 200))}</div> */}
+            <div>{HTMLReactParser(truncate(data.body, 200))}</div>
             <div>Question description</div>
           </div>
           <div
@@ -58,18 +66,16 @@ function AllQuestions() {
             ))}
           </div>
           <div className="author">
-            {/* <small>{data.create_at}</small> */}
-            <small>10/10/2023</small>
+            <small>{data.create_at}</small>
+            {/* <small>10/10/2023</small> */}
             <div className="auth-details">
               <Avatar
-                //   {...stringAvatar(data?.user?.displayName)}
-                {...stringAvatar("Ameen Works")}
+                {...stringAvatar(data?.user)}
+                // {...stringAvatar("Ameen Works")}
               />
               <p>
-                {/* {data?.user?.displayName
-                  ? data?.user?.displayName
-                  : "Natalie lee"} */}
-                Natalie lee
+                {data?.user ? data?.user : "Natalie lee"}
+                {/* Natalie lee */}
               </p>
             </div>
           </div>
