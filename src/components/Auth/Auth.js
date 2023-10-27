@@ -13,7 +13,7 @@ function Auth() {
   const [register, setRegister] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [user, setUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -70,7 +70,7 @@ function Auth() {
   const handleRegister = () => {
     setError("");
     setLoading(false);
-    if (email === "" || password === "" || username === "") {
+    if (email === "" || password === "" || user === "") {
       setError("Required field is missing.");
       setLoading(false);
     } else if (!validateEmail(email)) {
@@ -125,7 +125,7 @@ function Auth() {
                 <div className="input-field">
                   <p>Username</p>
                   <input
-                    value={username}
+                    value={user}
                     onChange={(e) => setUsername(e.target.value)}
                     type="text"
                   />
