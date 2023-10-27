@@ -55,7 +55,7 @@ function Auth() {
     } else {
       signInWithEmailAndPassword(auth, email, password)
         .then((res) => {
-          // console.log(res);
+          console.log(res);
           history("/home");
           setLoading(false);
         })
