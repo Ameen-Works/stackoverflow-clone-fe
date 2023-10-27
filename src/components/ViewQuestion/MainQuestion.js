@@ -152,7 +152,7 @@ function MainQuestion() {
         <div className="main-top">
           <h2 className="main-question">
             {questionData?.title}
-            npm install does not install any node modules in my React projects
+{/*npm install does not install any node modules in my React projects*/}
           </h2>
           <Link to="/add-question">
             <button>Ask Question</button>
