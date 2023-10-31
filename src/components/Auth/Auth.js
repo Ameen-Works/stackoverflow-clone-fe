@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import 'firebase/auth';
+// import 'firebase/auth';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -79,12 +79,19 @@ function Auth() {
       setLoading(false);
     } else {
       createUserWithEmailAndPassword(auth, email, password)
-        .then((res) => {
-          const user = res.user.auth.currentUser;
-          user.updateProfile({
-    displayName: username,
-  });
-          console.log(res);
+        .then(async(res) => {
+          const user = res.user;
+          setLoggedIn(true);
+          
+          await updateProfile(auth.currentUser, { displayName: username })
+
+    setUserInformation({
+      displayName:username,
+      email: user.email,
+      // uid: user.uid,
+      accessToken: user.accessToken,
+    });
+          console.log(user);
           history("/");
           setLoading(false);
         })
