@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithPopup,updateProfile 
 } from "firebase/auth";
 import { auth, provider } from "../../Firebase";
 import { useNavigate } from "react-router-dom";
@@ -81,16 +81,16 @@ function Auth() {
       createUserWithEmailAndPassword(auth, email, password)
         .then(async(res) => {
           const user = res.user;
-          setLoggedIn(true);
+          // setLoggedIn(true);
           
           await updateProfile(auth.currentUser, { displayName: username })
 
-    setUserInformation({
-      displayName:username,
-      email: user.email,
-      // uid: user.uid,
-      accessToken: user.accessToken,
-    });
+    // setUserInformation({
+    //   displayName:username,
+    //   email: user.email,
+    //   // uid: user.uid,
+    //   accessToken: user.accessToken,
+    // });
           console.log(user);
           history("/");
           setLoading(false);
