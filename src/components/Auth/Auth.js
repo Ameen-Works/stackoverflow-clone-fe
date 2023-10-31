@@ -80,8 +80,8 @@ function Auth() {
     } else {
       createUserWithEmailAndPassword(auth, email, password)
         .then((res) => {
-          const user = auth.currentUser;
-          user.updateProfile({
+          // const user = auth.currentUser;
+          res.updateProfile({
     displayName: username,
   });
           console.log(res);
