@@ -80,7 +80,7 @@ function Auth() {
     } else {
       createUserWithEmailAndPassword(auth, email, password)
         .then((res) => {
-          const user = firebase.auth().currentUser;
+          const user = auth.currentUser;
           user.updateProfile({
     displayName: username,
   });
